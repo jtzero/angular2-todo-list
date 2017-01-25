@@ -1,0 +1,81 @@
+$teal: rgb(38, 166, 154);
+
+.card {
+  height: 8em;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+}
+
+.card-header{
+  height: 40%;
+}
+
+.card-content {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.card-title {
+  height: 33%;
+}
+
+.card-bottom {
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+
+  > .delete {
+    float: right;
+    display: block;
+  }
+}
+
+.checkbox {
+  margin-left: .5em;
+}
+
+.checkbox > input {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.checkbox-control {
+  display: inline-block;
+  height: 24px;
+  width: 24px;
+  background-color: white;
+  border: 1px solid #b7b7b7;
+  border-radius: 12px;
+}
+
+.checkbox-control:after {
+  position: absolute;
+  top: 5px;
+  left: 22px;
+  width: 3px;
+}
+
+.done:checked ~ .checkbox-control {
+  background-color: $teal;
+  &:after {
+    color: white;
+    content: "L";
+    transform: rotate(45deg) scaleX(-1);
+  }
+}
+
+.delete {
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+  margin-right: .5em;
+  background-color: $teal;
+  border: none;
+  width: 2em;
+  height: 2em;
+  margin-bottom: .5em;
+  colors: white;
+}
+
+.float-reset {
+  clear: both;
+}

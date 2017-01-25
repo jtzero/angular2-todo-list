@@ -1,0 +1,12 @@
+<div class="todo-list">
+  <div class="control">
+    <div class="add-button" (click)="add()">
+      <p class="plus">+</p>
+    </div>
+  </div>
+  <div class="tasks">
+    <div *ngFor="let task of tasks;" class="task-wrapper">
+      <task-card [task]="task" (removeUnsaved)="removeUnsaved($event)"></task-card>
+    </div>
+  </div>
+</div>

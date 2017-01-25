@@ -1,0 +1,68 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "noEmitHelpers": true,
+    "declaration": true,
+    "strictNullChecks": false,
+    "baseUrl": "./src",
+    "paths": {
+    },
+    "lib": [
+      "dom",
+      "es6"
+    ],
+    "outDir": "dist/",
+    "typeRoots": [
+      "./src/@types",
+      "./node_modules/@types",
+      "./node_modules"
+    ],
+    "types" : [
+      "hammerjs",
+      "jasmine",
+      "node",
+      "protractor",
+      "selenium-webdriver",
+      "source-map",
+      "uglify-js",
+      "webpack"
+    ]
+  },
+  "include": [
+    "./src/**/*ts"
+  ],
+  "exclude": [
+    "./src/@types",
+    "./src/@types/**",
+    "node_modules",
+    "dist",
+    "bundle",
+    "**/*e2e*",
+    "tasks",
+    "config",
+    "./**/.keep",
+    "./src/app.local/",
+    "./src/app.local/**",
+    "./src/meta",
+    "./src/meta/**",
+    "./**/*e2e*",
+    "./**/*.spec.*",
+    "./**/*.local.*",
+    "./**/*.local",
+    "./**/*devtest*",
+    "./**/*localdev*"
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "forkChecker": true,
+    "useWebpackText": true
+  },
+  "compileOnSave": false,
+  "buildOnSave": false,
+  "atom": { "rewriteTsconfig": false }
+}

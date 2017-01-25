@@ -1,0 +1,13 @@
+<div class="card">
+  <div class="card-content">
+    <input class="card-header" [(ngModel)]="task.name" (blur)="onBlur()"/>
+    <div class="card-bottom">
+      <label class="checkbox" for="done">
+        <input type="checkbox" [(ngModel)]="task.done" id="done" class="done"/>
+        <div class="checkbox-control"></div>
+      </label>
+      <button class="delete" (click)="delete()">x</button>
+      <div class="float-reset"></div>
+    </div>
+  </div>
+</div>
