@@ -32,7 +32,7 @@ console.log('using baseUrl:', baseUrl);
  * Webpack Constants
  */
 const METADATA = {
-  title: 'seed',
+  title: 'angular2-todo-list',
   baseUrl: baseUrl,
   isDevServer: helpers.isWebpackDevServer()
 };
