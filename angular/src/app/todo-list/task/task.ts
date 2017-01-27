@@ -8,6 +8,10 @@ export class Task {
     return new Task(jsonObj['name'], jsonObj['done'], jsonObj['id']);
   }
 
+  get saved(): boolean {
+    return !!this.id;
+  }
+
   constructor(name: string = '', done: boolean = false, id = undefined) {
     this.id = id;
     this.name = name;

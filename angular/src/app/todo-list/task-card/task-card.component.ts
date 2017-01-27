@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { Subscription } from 'rxjs/Rx';
 
-import { TaskService } from '../task.service';
+import { TodoListService } from '../todo-list.service';
 import { Task } from '../task';
 
 @Component({
@@ -11,72 +11,43 @@ import { Task } from '../task';
   template: require('./card.component.html')
 })
 export class TaskCardComponent {
+  @Input() index: number;
   @Input() task: Task;
 
-  @Output() removeUnsaved = new EventEmitter();
-
-  constructor(private taskSvc: TaskService) {}
-
-  save() {
-    let sub: Subscription = this.taskSvc.put(this.task).subscribe(
-      (response) => {
-        console.log(response);
-      }, (err) => {
-        console.error(err);
-      }, () => {
-        sub.unsubscribe();
-      }
-    );
-
-  }
-  delete() {
-    if (this.task.id) {
-      let sub: Subscription = this.taskSvc.delete(this.task).subscribe(
-        (response) => {
-          console.log(response);
-        }, (err) => {
-          console.error(err);
-        }, () => {
-          sub.unsubscribe();
-        }
-      );
-    } else {
-      this.removeUnsaved.emit(this.task);
-    }
-  }
+  constructor(private todoListSvc: TodoListService) {}
 
   onBlur() {
-    if (this.task.id) {
-      this.update();
-    } else {
-      this.create();
-    }
+    this.updateOrCreate();
   }
 
   update() {
-    let sub: Subscription = this.taskSvc.put(this.task).subscribe(
-      (t: Task) => {
-        console.log('updated :: ', t);
-        this.task = t;
-      }, (err) => {
-        console.error(err);
-      }, () => {
-        sub.unsubscribe();
-      }
-    );
+    this.todoListSvc.updateTask(this.task);
   }
 
   create() {
-    let sub: Subscription = this.taskSvc.post(this.task).subscribe(
-      (t: Task) => {
-        console.log('saved :: ', t);
-        this.task = t;
-      }, (err) => {
-        console.error(err);
-      }, () => {
-        sub.unsubscribe();
-      }
-    );
+    this.todoListSvc.createTask(this.task);
   }
 
+  delete() {
+    this.todoListSvc.deleteTask(this.task);
+  }
+
+  onCheck(value) {
+    this.task.done = value.target.checked;
+    this.updateOrCreate();
+  }
+
+  save() {
+    this.updateOrCreate();
+  }
+
+  private updateOrCreate() {
+    if (this.task.saved) {
+      this.update();
+    } else {
+      if (this.task.name) {
+        this.create();
+      }
+    }
+  }
 }

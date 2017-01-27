@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Task } from './task';
-import { TaskService } from './task.service';
+import { TodoListService } from './todo-list.service';
 
 @Component({
   selector: 'todo-list',
@@ -10,26 +10,24 @@ import { TaskService } from './task.service';
 })
 export class TodoListComponent implements OnInit {
 
-  tasks: Task[] = [];
+  get tasks(): Task[] {
+    return this.todoListSvc.tasks;
+  }
 
-  constructor(private taskSvc: TaskService) {}
+  constructor(private todoListSvc: TodoListService) {}
 
   ngOnInit() {
-    this.taskSvc.get().subscribe((list) => {
-      if (list) {
-        this.tasks = list;
-      }
-    }, (error) => {
-      console.error('there has been a grave error ::', error);
-    });
+    this.todoListSvc.getAllTasks();
   }
 
-  add() {
-    this.tasks.push(new Task());
+  add(): Task {
+    let t = new Task();
+    this.tasks.push(t);
+    return t;
   }
 
-  removeUnsaved(task: Task) {
-    let idx = this.tasks.indexOf(task);
-    this.tasks.splice(idx, 1);
+  delete(task: Task) {
+    this.todoListSvc.deleteTask(task);
   }
+
 }

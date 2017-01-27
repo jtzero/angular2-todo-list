@@ -1,9 +1,10 @@
 <div class="card">
   <div class="card-content">
-    <input class="card-header" [(ngModel)]="task.name" (blur)="onBlur()"/>
+    <textarea class="card-header" [(ngModel)]="task.name" (blur)="onBlur()"></textarea>
+    <input type="hidden" [value]="task.id"/>
     <div class="card-bottom">
-      <label class="checkbox" for="done">
-        <input type="checkbox" [(ngModel)]="task.done" id="done" class="done"/>
+      <label class="checkbox" [for]="'done' + index">
+        <input type="checkbox" (click)="onCheck($event)" [ngModel]="task.done" [id]="'done' + index" class="done"/>
         <div class="checkbox-control"></div>
       </label>
       <button class="delete" (click)="delete()">x</button>

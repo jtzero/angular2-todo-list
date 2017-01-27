@@ -49,7 +49,7 @@ exports.config = {
   onPrepare: function() {
     jasmineReporters = require('jasmine-reporters');
     jasmine.getEnv().addReporter(
-      new jasmineReporters.JUnitXmlReporter('reports/e2e/', true, true));
+      new jasmineReporters.JUnitXmlReporter({savePath: 'reports/e2e/', consolidateAll: true}));
   },
 
   /**

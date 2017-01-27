@@ -5,8 +5,8 @@
     </div>
   </div>
   <div class="tasks">
-    <div *ngFor="let task of tasks;" class="task-wrapper">
-      <task-card [task]="task" (removeUnsaved)="removeUnsaved($event)"></task-card>
+    <div *ngFor="let task of tasks; let i = index" class="task-wrapper">
+      <task-card [task]="task" [index]="i"></task-card>
     </div>
   </div>
 </div>

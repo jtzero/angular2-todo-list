@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core'; import {
+import { Injectable } from '@angular/core';
+import {
   Http,
   Headers,
   Request,
@@ -22,8 +23,6 @@ import {
 
 import * as _ from 'lodash';
 
-// import { EnvironmentConfig } from 'pn-environment-config';
-
 import { Task } from './task';
 
 @Injectable()
@@ -34,11 +33,8 @@ export class TaskService {
   private _tasksSubject: BehaviorSubject<Task[]> = undefined;
   private headers: Headers;
 
-  constructor(
-              // private config: EnvironmentConfig,
-              private http: Http,
-             ) {
-    this._tasksSubject = new BehaviorSubject(undefined);
+  constructor(private http: Http) {
+    this._tasksSubject = new BehaviorSubject([]);
     this.headers = new Headers({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -66,6 +62,47 @@ export class TaskService {
     return params;
   }
 
+  post(task: Task): Observable<Task> {
+    return this.send(task, RequestMethod.Post, { search: { returnObject: true } });
+  }
+
+  put(task: Task): Observable<Task> {
+    return this.send(task, RequestMethod.Put, { search: { returnObject: true } });
+  }
+
+  get(id = '', opts = {}): Observable<Task[]> {
+    if (id) {
+      return this.getByID(id, opts);
+    } else {
+      return this.getAll(opts);
+    }
+  }
+
+  getByID(id, opts = {}): Observable<Task[]> {
+    let task = this.fromCache(id);
+    if (task) {
+      return (new BehaviorSubject([task])).asObservable();
+    } else {
+      opts['id'] = id;
+      let sub = this.stream((new BehaviorSubject(undefined)), opts);
+      this.stream(this._tasksSubject, opts);
+      return sub;
+    }
+  }
+
+  getAll(opts = {}): Observable<Task[]> {
+    let cache = this._tasksSubject.getValue();
+    if (!cache || !cache[0]) {
+      return this.getAllNoMemo(opts);
+    } else {
+      return this._tasksSubject.asObservable();
+    }
+  }
+
+  getAllNoMemo(opts = {}): Observable<Task[]> {
+    return this.stream(this._tasksSubject, opts);
+  }
+
   stream(subject: Subject<any>, opts = {}): Observable<Task[]> {
     let options: RequestOptionsArgs = {
       url: this.url(opts['id']),
@@ -75,7 +112,8 @@ export class TaskService {
       body: undefined
     };
     this.http.request(this.request(options)).filter(this.filterNullResponse)
-                                            .map(this.extractData)
+                                            .map(this.extractGetData)
+                                            .filter(this.filterUndefined)
                                             .subscribe(
     (tasks: Task[]) => {
       console.log('Updating [] BehaviorSubject with:', tasks);
@@ -90,43 +128,7 @@ export class TaskService {
     return subject.asObservable();
   }
 
-  post(task: Task): Observable<Task> {
-    return this.send(task, RequestMethod.Post, { search: { returnObject: true } });
-  }
-
-  put(task: Task): Observable<Task> {
-    return this.send(task, RequestMethod.Put, { search: { returnObject: true } });
-  }
-
-  get(id = '', opts = {}): Observable<Task[]> {
-    if (id) {
-      return this.get_by_id(id, opts);
-    } else {
-      return this.get_all(opts);
-    }
-  }
-
-  get_by_id(id, opts = {}): Observable<Task[]> {
-    let task = this.fromCache(id);
-    if (task) {
-      return (new BehaviorSubject([task])).asObservable();
-    } else {
-      opts['id'] = id;
-      let sub = this.stream((new BehaviorSubject(undefined)), opts);
-      this.stream(this._tasksSubject, opts);
-      return sub;
-    }
-  }
-
-  get_all(opts = {}): Observable<Task[]> {
-    if (!this._tasksSubject.getValue()) {
-      return this.stream(this._tasksSubject, opts);
-    } else {
-      return this._tasksSubject.asObservable();
-    }
-  }
-
-  delete(task: Task, opts = {}): Observable<any> {
+  delete(task: Task, opts = {}): Observable<Response> {
     let options: RequestOptionsArgs = {
       url: this.url(task.id),
       method: RequestMethod.Delete,
@@ -142,7 +144,7 @@ export class TaskService {
       }, (err) => {
         rs.error(err);
       }, () => {
-        this.get_all();
+        this.getAllNoMemo();
         sub.unsubscribe();
       }
     );
@@ -150,7 +152,7 @@ export class TaskService {
     return rs.asObservable();
   }
 
-  private send(task: Task, method, opts = {}): Observable<Task> {
+  send(task: Task, method, opts = {}): Observable<Task> {
 
     let options: RequestOptionsArgs = {
       url: this.url(task.id),
@@ -170,7 +172,9 @@ export class TaskService {
       }, (err) => {
         rs.error(err);
         Observable.empty();
-      }, () => { this.get_all(); }
+      }, () => {
+        this.getAllNoMemo();
+      }
     );
     return rs.asObservable();
   }
@@ -189,6 +193,10 @@ export class TaskService {
     return !isNull;
   }
 
+  private filterUndefined(arg) {
+    return arg !== undefined;
+  }
+
   private request(opts): Request {
     let reqOptions = new RequestOptions(opts as RequestOptionsArgs);
     return new Request(reqOptions);
@@ -202,4 +210,22 @@ export class TaskService {
       });
     }
   }
+
+  private extractGetData(res: Response): Task[] {
+    let raw: any = _.castArray(res.json().data);
+    if (raw[0]) {
+      return _.map(raw, (t) => {
+        return Task.fromJSON(t);
+      });
+    } else {
+      return [];
+    }
+  }
+
+  private validate(task) {
+    if (!task.name) {
+      throw new Error('attempted to save a task without a name');
+    }
+  }
+
 }

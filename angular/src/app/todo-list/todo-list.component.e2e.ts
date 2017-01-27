@@ -4,18 +4,14 @@ describe('TodoListComponent', () => {
     browser.get('/');
   });
 
-  it('should have an h1 tag', () => {
-    browser.driver.wait(() => {
-      return browser.isElementPresent(by.css('h1'));
-    }, 10000)
-    .then(() => {
-      let subject = element(by.css('h1')).getText();
-      let result  = 'This is the TODO Component';
-      expect(subject).toEqual(result);
-    },
-    (error) => {
-      console.log('error:', error);
-    });
+  it('should have an .add-button', () => {
+    expect(element(by.css('.add-button')).isPresent()).toBe(true);
+  });
+
+  it('should add a task-card when clicked', () => {
+    let btn = element(by.css('.plus'));
+    btn.click();
+    expect(element(by.tagName('task-card')).isPresent()).toBe(true);
   });
 
 });
