@@ -138,14 +138,14 @@ export class TaskService {
     };
     let rs: ReplaySubject<Response> = new ReplaySubject<Response>();
 
-    let sub: Subscription = this.http.request(this.request(options)).subscribe(
+    this.http.request(this.request(options)).take(1).subscribe(
       (response) => {
         rs.next(response);
       }, (err) => {
         rs.error(err);
+        Observable.empty();
       }, () => {
-        this.getAllNoMemo();
-        sub.unsubscribe();
+        this.getAllNoMemo().take(1);
       }
     );
 
@@ -173,7 +173,7 @@ export class TaskService {
         rs.error(err);
         Observable.empty();
       }, () => {
-        this.getAllNoMemo();
+        this.getAllNoMemo().take(1);
       }
     );
     return rs.asObservable();
@@ -214,7 +214,7 @@ export class TaskService {
   private extractGetData(res: Response): Task[] {
     let raw: any = _.castArray(res.json().data);
     if (raw[0]) {
-      return _.map(raw, (t) => {
+       return _.map(raw, (t) => {
         return Task.fromJSON(t);
       });
     } else {

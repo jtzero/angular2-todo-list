@@ -5,7 +5,19 @@ export class Task {
   done: boolean;
 
   static fromJSON(jsonObj, opts = {}): Task {
+    Task.validate(jsonObj);
     return new Task(jsonObj['name'], jsonObj['done'], jsonObj['id']);
+  }
+
+  static validate(obj) {
+    if (obj === null) {
+      throw new Error('cannot convert null');
+    }
+    if (!obj.hasOwnProperty('name') || !obj.hasOwnProperty('done')) {
+      throw new Error('name or done does not exists on this object :' +
+                      JSON.stringify(obj)
+                     );
+    }
   }
 
   get saved(): boolean {
@@ -25,4 +37,5 @@ export class Task {
       id: this.id
     };
   }
+
 }
